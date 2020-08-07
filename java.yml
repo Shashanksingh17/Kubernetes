@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:java
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: java
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  minReadySeconds: 5 
+  template:
+    metadata:
+      labels:
+        app: java
+    spec:
+      nodeSelector:
+        "beta.kubernetes.io/os": linux
+      containers:
+      - name: java
+        image: shashanksingh17/javaapplication:springboot
+        ports:
+        - containerPort: 8080
+        resources:
+          requests:
+            cpu: 250m
+          limits:
+            cpu: 500m
+        env:
+        - name: TITLE
+          value: "Welcome AKS Ingress chatapp"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: java
+  labels:
+    run: java
+spec:
+  ports:
+  - port: 80
+    targetPort: 8080
+  selector:
+    app: java
+#  type: LoadBalancer  

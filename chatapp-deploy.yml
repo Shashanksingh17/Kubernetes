@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chatapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: chatapp
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  minReadySeconds: 5 
+  template:
+    metadata:
+      labels:
+        app: chatapp
+    spec:
+      nodeSelector:
+        "beta.kubernetes.io/os": linux
+      containers:
+      - name: chatapp
+        image: shashanksingh17/source:chatapp_chat
+        ports:
+        - containerPort: 8000
+        resources:
+          requests:
+            cpu: 30m
+          limits:
+            cpu: 100m
+        env:
+        - name: TITLE
+          value: "Welcome AKS Ingress chatapp"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: chatapp
+  labels:
+    run: chatapp
+spec:
+  ports:
+  - port: 80
+    targetPort: 8000
+  selector:
+    app: chatapp
+#  type: LoadBalancer 
+

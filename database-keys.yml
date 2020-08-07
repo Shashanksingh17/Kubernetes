@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: database-keys
+type: Opaque
+data:
+  user: postgres
+  password: shashank8080

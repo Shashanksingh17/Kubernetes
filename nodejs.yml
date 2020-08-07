@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nodejs
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nodejs
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  minReadySeconds: 5 
+  template:
+    metadata:
+      labels:
+        app: nodejs
+    spec:
+      nodeSelector:
+        "beta.kubernetes.io/os": linux
+      containers:
+      - name: nodejs
+        image: shashanksingh17/nodejsapp:nodejs
+        ports:
+        - containerPort: 8080
+        resources:
+          requests:
+            cpu: 250m
+          limits:
+            cpu: 500m
+        env:
+        - name: TITLE
+          value: "Welcome AKS Ingress chatapp"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nodejs
+  labels:
+    run: nodejs
+spec:
+  ports:
+  - port: 80
+    targetPort: 8080
+  selector:
+    app: nodejs
+#  type: LoadBalancer  
